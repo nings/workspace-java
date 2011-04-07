@@ -1,0 +1,9 @@
+<Scenario>
+	<Magic>haggle</Magic>
+	<Architecture>haggle -c -f -I</Architecture>
+	<Configuration>config.xml</Configuration>
+	<Tracefile>markov.trc</Tracefile>
+	<Iterations>4</Iterations>
+	<Warmup>300</Warmup>
+	<Application>luckyMe</Application>
+</Scenario>
