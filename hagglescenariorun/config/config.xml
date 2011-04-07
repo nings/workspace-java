@@ -1,0 +1,17 @@
+<Haggle persistent="no">
+	<Attr name="ManagerConfiguration">*</Attr>
+	<SecurityManager security_level="LOW"/>
+	<DebugManager>
+		<DebugTrace enable="true"/>
+	</DebugManager>
+	<NodeManager>
+		<Node matching_threshold="0" max_dataobjects_in_match="10"/>
+		<NodeDescriptionRetry retries="3" retry_wait="10.0"/>
+	</NodeManager>
+	<ProtocolManager>
+		<TCPServer port="9697" backlog="30"/>
+	</ProtocolManager>
+	<DataManager set_createtime_on_bloomfilter_update="true">
+		<Aging period="3600" max_age="86400"/>
+	</DataManager>
+</Haggle>
