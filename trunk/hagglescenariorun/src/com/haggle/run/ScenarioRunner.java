@@ -205,7 +205,7 @@ public class ScenarioRunner implements Runnable {
 					// path += "/" + path_element[i];
 					path += path_element[i] + "/";
 			}
-		path = "/"+path;
+		path = "/" + path;
 		return path;
 	}
 
@@ -291,9 +291,6 @@ public class ScenarioRunner implements Runnable {
 		if (cancelButton_pressed)
 			return;
 
-		// Get scenario name:
-//		String scenario_name = getTagContent(scenario_file, "name");
-
 		// Get number of iterations. If not specified the default is one
 		// iteration. xxx
 		int iterations = 1;
@@ -325,6 +322,7 @@ public class ScenarioRunner implements Runnable {
 		if (cancelButton_pressed)
 			return;
 
+		// define the action list which might form event list
 		ArrayList<Action> actions = new ArrayList<Action>();
 		int nodeCount = 0;
 
@@ -336,6 +334,7 @@ public class ScenarioRunner implements Runnable {
 			System.out.println("TRACEFILE!");
 			return;
 		} else {
+			// trace file parsing
 			readTraceFile_ok = true;
 			if (cancelButton_pressed)
 				return;
@@ -407,6 +406,7 @@ public class ScenarioRunner implements Runnable {
 				return;
 			}
 		}
+
 		parseTraceFile_ok = true;
 		if (cancelButton_pressed)
 			return;
@@ -457,10 +457,10 @@ public class ScenarioRunner implements Runnable {
 
 		// While loop start
 		int run = 0;
-
 		while (iterations <= maxInteration) {
+
 			System.out.println("Interation starts at: "
-					+ (new Date().getTime() / 60000));
+					+ (new Date().toString()));
 
 			// FIXME: Shutdown any running Haggle.
 			scenario_file = parseXML(getContents(scenario_file_name));
@@ -471,8 +471,7 @@ public class ScenarioRunner implements Runnable {
 			}
 
 			run++;
-			// FIXME: Shutdown any running Haggle.
-			// FIXME: And application!
+
 			// Create execution log file.
 			File oFile = new File(now.getTime() + ".log");
 			PrintStream output = null;
@@ -576,7 +575,7 @@ public class ScenarioRunner implements Runnable {
 						+ " config.xml " + nodeCount);
 			}
 
-			// upload other files cp one file with node_name
+			// upload other files cp one file with node_name - implementation in shell
 			String anyFileName = getTagContent(scenario_file, "File");
 			if (anyFileName != null) {
 				System.out.println("upload: " + anyFileName);
@@ -637,9 +636,6 @@ public class ScenarioRunner implements Runnable {
 				System.out.println("start: run_app_by_order.py " + nodeCount);
 			}
 
-			startApplication_ok = true;
-			if (cancelButton_pressed)
-				return;
 			// FIXME: make sure the application started!
 			// Wait until application has initialized.
 			try {
@@ -666,7 +662,7 @@ public class ScenarioRunner implements Runnable {
 			if (event.length > 0) {
 				System.out.println("start scenario...");
 
-//				runScenarioBar_max = (int) event[event.length - 1].timestamp;
+				// runScenarioBar_max = (int) event[event.length - 1].timestamp;
 				long done;
 				long start = done = new Date().getTime();
 				System.out.println("Testbed started on " + start);
@@ -781,8 +777,7 @@ public class ScenarioRunner implements Runnable {
 		System.out.println("done");
 	}
 
-	private static boolean should_dump_to_log;
-	private static boolean should_dump_to_log_occasionally;
+//	private static boolean should_dump_to_log;
 	private static boolean is_finished;
 
 	public void run() {
@@ -807,36 +802,19 @@ public class ScenarioRunner implements Runnable {
 		main_args = args;
 		is_finished = false;
 
-		// FIXME: are we running with a GUI, etc.?
-		should_dump_to_log = false;
-		should_dump_to_log_occasionally = false;
-
-		if (should_dump_to_log) {
-			// FIXME: set up to write to log.
-		}
-
 		// Start running the test:
 		Thread thread = new Thread(new ScenarioRunner());
 		if (thread != null)
 			thread.start();
-		else {
-			is_finished = true;
-			// FIXME: note that the thread wouldn't start!
-		}
 
 		while (!is_finished) {
 			try {
 				Thread.sleep(1000);
 			} catch (Exception e) {
 			}
-
-			if (should_dump_to_log_occasionally
-					|| (is_finished && should_dump_to_log)) {
-				// FIXME: dump to file.
-			}
-
 			// FIXME: did the user press cancel?
 		}
 
 	}
+
 }
