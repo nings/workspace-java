@@ -455,20 +455,25 @@ public class ScenarioRunner implements Runnable {
 			System.out.println("runTimes: " + myTimes);
 		}
 
+		// FIXME: Shutdown any running Haggle.
+		scenario_file = parseXML(getContents(scenario_file_name));
+		if (scenario_file == null) {
+			System.out.println("Unable to load scenario file "
+					+ scenario_file_name + ".");
+			return;
+		}
+		
+		String startNodes = getTagContent(scenario_file, "startNodes");
+		String cfgFileName = getTagContent(scenario_file, "Configuration");
+		String appName = getTagContent(scenario_file, "Application");
+		String networkArch = getTagContent(scenario_file, "Architecture");
+
 		// While loop start
 		int run = 0;
 		while (iterations <= maxInteration) {
 
 			System.out.println("Interation starts at: "
 					+ (new Date().toString()));
-
-			// FIXME: Shutdown any running Haggle.
-			scenario_file = parseXML(getContents(scenario_file_name));
-			if (scenario_file == null) {
-				System.out.println("Unable to load scenario file "
-						+ scenario_file_name + ".");
-				return;
-			}
 
 			run++;
 
@@ -482,12 +487,7 @@ public class ScenarioRunner implements Runnable {
 			}
 			System.out.println("Log files created");
 
-			clearNodes_ok = true;
-			if (cancelButton_pressed)
-				return;
-
 			// Make sure they all started! errors for 100
-			String startNodes = getTagContent(scenario_file, "startNodes");
 			if (startNodes != null) {
 				if (mySystem("check_nodes.sh " + nodeCount) != 0) {
 					System.out.println("Check nodes failed!");
@@ -499,11 +499,7 @@ public class ScenarioRunner implements Runnable {
 			System.out.println("clean all nodes.");
 			// Before start close all program
 			// neee
-			mySystem("cleanallnodes.sh");
-
-			checkNodes_ok = true;
-			if (cancelButton_pressed)
-				return;
+			mySystem("cleanallnodes.sh "+appName);
 
 			// Initialize filters.
 			if (mySystem("initfilter.sh") != 0) {
@@ -511,9 +507,7 @@ public class ScenarioRunner implements Runnable {
 				return;
 			}
 
-			// Upload configuration file.
 			// upload common config.xml
-			String cfgFileName = getTagContent(scenario_file, "Configuration");
 			if (cfgFileName != null) {
 				System.out.println("config: " + cfgFileName);
 				mySystem("upload_file.sh " + scenario_path + cfgFileName
@@ -590,7 +584,6 @@ public class ScenarioRunner implements Runnable {
 				return;
 
 			// Start haggle on each node:
-			String networkArch = getTagContent(scenario_file, "Architecture");
 			System.out.println("starting Haggle... " + networkArch);
 			for (i = 0; i < nodeCount; i++) {
 				mySystem("start_program_on_node.sh " + "node-" + i + " "
@@ -599,9 +592,6 @@ public class ScenarioRunner implements Runnable {
 
 			System.out.println("Haggle started");
 
-			startHaggle_ok = true;
-			if (cancelButton_pressed)
-				return;
 			// FIXME: make sure haggle started!
 			// Wait until haggle has initialized.
 			try {
@@ -613,7 +603,6 @@ public class ScenarioRunner implements Runnable {
 			// Get the file name/path of the application to start:
 			// needneed to do here: all nodes run the same app
 			// run applications
-			String appName = getTagContent(scenario_file, "Application");
 			if (appName != null) {
 				System.out.println("starting application... " + appName);
 				for (i = 0; i < nodeCount; i++) {
@@ -703,10 +692,6 @@ public class ScenarioRunner implements Runnable {
 
 			}
 
-			runScenario_ok = true;
-			if (cancelButton_pressed)
-				return;
-
 			output.close();
 
 			try {
@@ -727,14 +712,11 @@ public class ScenarioRunner implements Runnable {
 			// the nodes shut down faster by allowing them to shut down
 			// simultaneously.
 			// Make sure all nodes have stopped running haggle:
-			for (i = 0; i < nodeCount; i++) {
+			/*for (i = 0; i < nodeCount; i++) {
 				System.out.print("  node-" + i + "... ");
-//				mySystem("wait_for_app_to_stop.sh" + " node-" + i + " haggle");
+				mySystem("wait_for_app_to_stop.sh" + " node-" + i + " haggle");
 				System.out.println("ok");
-			}
-			stopHaggle_ok = true;
-			if (cancelButton_pressed)
-				return;
+			}*/
 
 			// Collect and save logs.
 
@@ -749,10 +731,6 @@ public class ScenarioRunner implements Runnable {
 						+ " " + scenario_path);
 			}
 
-			saveLogs_ok = true;
-
-			if (cancelButton_pressed)
-				return;
 			// Decrease number of iterations left.
 			iterations++;
 
