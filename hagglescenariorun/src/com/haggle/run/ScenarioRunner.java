@@ -166,7 +166,7 @@ public class ScenarioRunner implements Runnable {
 	}
 
 	static public int system(String cmd) {
-		// System.out.println("Executing: " + cmd);
+//		 System.out.println("Executing: " + cmd);
 		try {
 			Process p = Runtime.getRuntime().exec(cmd);
 			BufferedWriter stdIn;
@@ -439,7 +439,7 @@ public class ScenarioRunner implements Runnable {
 		if (cancelButton_pressed)
 			return;
 
-		int myStamp = 1;
+		int myStamp = 100;
 		String tStamp = getTagContent(scenario_file, "TimeStamp");
 		if (tStamp != null) {
 			myStamp = Integer.parseInt(tStamp);
@@ -686,11 +686,12 @@ public class ScenarioRunner implements Runnable {
 					}
 					// make the topology
 					mySystem(event[i].cmd);
+					
 					done = new Date().getTime();
 					output.println(event[i].cmd + " " + done);
 					if (showEvent != null) {
 						System.out.println(i + " " + event[i].cmd + " time: "
-								+ done);
+								+ event[i].timestamp);
 					}
 
 					runScenarioBar_value = (int) event[i].timestamp;
@@ -728,7 +729,7 @@ public class ScenarioRunner implements Runnable {
 			// Make sure all nodes have stopped running haggle:
 			for (i = 0; i < nodeCount; i++) {
 				System.out.print("  node-" + i + "... ");
-				mySystem("wait_for_app_to_stop.sh" + " node-" + i + " haggle");
+//				mySystem("wait_for_app_to_stop.sh" + " node-" + i + " haggle");
 				System.out.println("ok");
 			}
 			stopHaggle_ok = true;
@@ -744,7 +745,7 @@ public class ScenarioRunner implements Runnable {
 						+ " " + scenario_path);
 			} else {
 				System.out.println("Collect logs");
-				mySystem("collect_logs.sh " + nodeCount + " " + iterations
+				mySystem("collect_logs_dir.sh " + nodeCount + " " + iterations
 						+ " " + scenario_path);
 			}
 
